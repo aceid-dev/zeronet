@@ -1,0 +1,17 @@
+PySocks==1.7.1
+asn1crypto==1.5.1
+base58==2.1.1
+cffi==1.17.1
+coincurve==20.0.0
+gevent-ws==2.1.0
+gevent==24.2.1
+greenlet==3.1.0
+maxminddb==2.6.2
+msgpack==1.1.0
+pyasn1==0.6.1
+pycparser==2.22
+rsa==4.9
+setuptools==75.0.0
+websocket-client==1.8.0
+zope.event==5.0
+zope.interface==7.0.3

@@ -1,0 +1,44 @@
+services:
+  zeronet:
+    container_name: zeronet
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ALPINE_VERSION: ${ALPINE_VERSION}
+        PIP_VERSION: ${PIP_VERSION}
+        SETUPTOOLS_VERSION: ${SETUPTOOLS_VERSION}
+        OCI_SOURCE: ${OCI_SOURCE}
+        ZERONET_REPO_URL: ${ZERONET_REPO_URL}
+        ZERONET_REPO_REF: ${ZERONET_REPO_REF}
+    environment:
+      ENABLE_TOR: ${ENABLE_TOR}
+      ZERONET_CONFIG_FILE: ${ZERONET_CONFIG_FILE}
+      ZERONET_DATA_DIR: ${ZERONET_DATA_DIR}
+      ZERONET_FILESERVER_PORT: ${ZERONET_FILESERVER_PORT}
+      ZERONET_UI_HOSTS: ${ZERONET_UI_HOSTS}
+      ZERONET_UI_EXTRA_HOSTS: ${ZERONET_UI_EXTRA_HOSTS}
+      ZERONET_UI_IP: ${ZERONET_UI_IP}
+      ZERONET_UI_PORT: ${ZERONET_UI_PORT}
+      ZERONET_EXTRA_ARGS: ${ZERONET_EXTRA_ARGS}
+    ports:
+      - "${ZERONET_UI_PUBLISH_IP}:${ZERONET_UI_PORT}:${ZERONET_UI_PORT}"
+      - "${ZERONET_FILESERVER_PORT}:${ZERONET_FILESERVER_PORT}"
+    volumes:
+      - zeronet-data:${ZERONET_DATA_DIR}
+    restart: unless-stopped
+    networks:
+      default:
+        ipv4_address: ${ZERONET_CONTAINER_IP}
+
+networks:
+  default:
+    name: zeronet_network
+    ipam:
+      config:
+        - subnet: ${ZERONET_NETWORK_SUBNET}
+
+volumes:
+  zeronet-data:
+    name: zeronet_data
