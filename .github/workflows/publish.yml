@@ -35,6 +35,10 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
+          build-args: |
+            ZERONET_REPO_REF=6dc1ebd93ff488dd5d8fe42242fa435a199a7833
+            PIP_VERSION=24.2
+            SETUPTOOLS_VERSION=75.0.0
 
           tags: |
             ${{ env.IMAGE_NAME }}:${{ github.sha }}-amd64
@@ -67,6 +71,10 @@ jobs:
           file: ./Dockerfile
           platforms: linux/arm64
           push: true
+          build-args: |
+            ZERONET_REPO_REF=6dc1ebd93ff488dd5d8fe42242fa435a199a7833
+            PIP_VERSION=24.2
+            SETUPTOOLS_VERSION=75.0.0
 
           tags: |
             ${{ env.IMAGE_NAME }}:${{ github.sha }}-arm64

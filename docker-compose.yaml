@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        ALPINE_VERSION: ${ALPINE_VERSION}
         PIP_VERSION: ${PIP_VERSION}
         SETUPTOOLS_VERSION: ${SETUPTOOLS_VERSION}
         OCI_SOURCE: ${OCI_SOURCE}
