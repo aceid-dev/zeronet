@@ -1,7 +1,9 @@
 services:
   zeronet:
     container_name: zeronet
+
     image: ${IMAGE_NAME}:${IMAGE_TAG}
+
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,6 +13,7 @@ services:
         OCI_SOURCE: ${OCI_SOURCE}
         ZERONET_REPO_URL: ${ZERONET_REPO_URL}
         ZERONET_REPO_REF: ${ZERONET_REPO_REF}
+
     environment:
       ENABLE_TOR: ${ENABLE_TOR}
       ZERONET_CONFIG_FILE: ${ZERONET_CONFIG_FILE}
@@ -21,23 +24,34 @@ services:
       ZERONET_UI_IP: ${ZERONET_UI_IP}
       ZERONET_UI_PORT: ${ZERONET_UI_PORT}
       ZERONET_EXTRA_ARGS: ${ZERONET_EXTRA_ARGS}
+
     ports:
       - "${ZERONET_UI_PUBLISH_IP}:${ZERONET_UI_PORT}:${ZERONET_UI_PORT}"
       - "${ZERONET_FILESERVER_PORT}:${ZERONET_FILESERVER_PORT}"
+
     volumes:
       - zeronet-data:${ZERONET_DATA_DIR}
-    restart: unless-stopped
-    networks:
-      default:
-        ipv4_address: ${ZERONET_CONTAINER_IP}
 
-networks:
-  default:
-    name: zeronet_network
-    ipam:
-      config:
-        - subnet: ${ZERONET_NETWORK_SUBNET}
+    networks:
+      - zeronet_network
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3 -c 'import socket,sys; s=socket.socket(); s.settimeout(5); s.connect((\"127.0.0.1\", int(\"${ZERONET_UI_PORT}\"))); s.close()' || exit 1"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    restart: unless-stopped
 
 volumes:
   zeronet-data:
     name: zeronet_data
+
+networks:
+  zeronet_network:
+    name: zeronet_network

@@ -22,7 +22,7 @@ Todo el proyecto toma sus variables de `.env`. Ahí se centralizan:
 - `ZERONET_REPO_URL`
 - `ZERONET_REPO_REF`
 - variables de runtime de ZeroNet para Compose
-- red Docker fija para la UI
+- red Docker aislada (`zeronet_network`) para el contenedor
 
 El upstream queda fijado ahora en `ZERONET_REPO_REF=6dc1ebd93ff488dd5d8fe42242fa435a199a7833`.
 
@@ -72,9 +72,9 @@ docker-compose up -d
 
 Con esta configuracion, la UI:
 
-- escucha dentro de Docker en `http://zeronet:43110/`
-- escucha dentro del contenedor en `http://10.0.6.10:43110/`
-- se publica en la maquina host solo en `http://127.0.0.1:43110/` y `http://localhost:43110/`
+- escucha dentro del contenedor en `http://0.0.0.0:43110/`
+- se publica en el host solo en `http://127.0.0.1:43110/` y `http://localhost:43110/`
+- el contenedor corre en una red aislada (`zeronet_network`), sin acceso desde otros contenedores
 
 Para parar y borrar el contenedor:
 
@@ -82,7 +82,7 @@ Para parar y borrar el contenedor:
 docker compose down
 ```
 
-Para este aislamiento, `docker compose` es el flujo soportado. Con `docker run` directo tendrias que recrear manualmente la red, la IP fija y el bind de `127.0.0.1`.
+Para este aislamiento, `docker compose` es el flujo soportado. Con `docker run` directo tendrias que recrear manualmente el bind de `127.0.0.1` y la red aislada.
 
 ## Publicacion
 
@@ -95,7 +95,7 @@ Eso se queda fuera de `docker compose` a proposito, porque el workflow ya resuel
 - labels OCI
 - push a GHCR
 
-La imagen publicada sigue siendo portable: la IP fija y el cierre de la UI al host local solo se aplican en runtime desde `compose.yaml`.
+La imagen publicada sigue siendo portable: la IP dinámica y el cierre de la UI al host local solo se aplican en runtime desde `compose.yaml`.
 
 ## Nota
 

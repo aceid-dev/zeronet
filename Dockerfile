@@ -26,8 +26,13 @@ COPY constraints.txt /tmp/constraints.txt
 
 RUN python3 -m venv /zeronet/venv \
     && . /zeronet/venv/bin/activate \
-    && python3 -m pip install --upgrade "pip==${PIP_VERSION}" "setuptools==${SETUPTOOLS_VERSION}" \
-    && python3 -m pip install --no-cache-dir -c /tmp/constraints.txt -r /zeronet/requirements.txt
+    && python3 -m pip install --upgrade \
+        "pip==${PIP_VERSION}" \
+        "setuptools==${SETUPTOOLS_VERSION}" \
+    && python3 -m pip install \
+        --no-cache-dir \
+        -c /tmp/constraints.txt \
+        -r /zeronet/requirements.txt
 
 FROM python:${PYTHON_VERSION}-slim
 
@@ -41,6 +46,7 @@ ARG ZERONET_UI_EXTRA_HOSTS=
 ARG ZERONET_UI_IP=0.0.0.0
 ARG ZERONET_UI_PORT=43110
 ARG ZERONET_EXTRA_ARGS=
+
 LABEL org.opencontainers.image.source="${OCI_SOURCE}"
 
 COPY --from=build /zeronet /zeronet
@@ -48,6 +54,7 @@ COPY docker_entrypoint.sh /docker_entrypoint.sh
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     tor \
+    curl \
     && rm -rf /var/lib/apt/lists/* \
     && printf 'ControlPort 9051\nCookieAuthentication 1\n' >> /etc/tor/torrc \
     && chmod +x /docker_entrypoint.sh
@@ -63,8 +70,10 @@ ENV ZERONET_UI_IP=${ZERONET_UI_IP}
 ENV ZERONET_UI_PORT=${ZERONET_UI_PORT}
 ENV ZERONET_EXTRA_ARGS=${ZERONET_EXTRA_ARGS}
 
-VOLUME ${ZERONET_DATA_DIR}
+VOLUME ["${ZERONET_DATA_DIR}"]
+
 EXPOSE ${ZERONET_UI_PORT} ${ZERONET_FILESERVER_PORT}
 
 WORKDIR /zeronet
+
 CMD ["/docker_entrypoint.sh"]
